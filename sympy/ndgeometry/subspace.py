@@ -16,6 +16,21 @@ from sympy.ndgeometry.global_space import global_space
 class Subspace(BaseSpace):
     """Unbounded subspace.
 
+    A space that exists embedded within another space.  It can have as many
+    coordinate functions as its parent space has parameters; if any functions
+    are not defined, their coordinates are assumed to be zero.
+
+    Parameters
+    ==========
+    coords : list of SymPy expressions
+        The parametric functions that defines where the subspace exists.
+    params : list of Symbols
+        The symbols of the parametric functions that represent where the
+        subspace exists.
+    parent_space : Subspace, optional
+        The space in which this subspace's coordinates are defined.
+        Defaults to the global_space.
+
     """
 
     def __new__(cls, coords, params, parent_space=global_space, **kwargs):

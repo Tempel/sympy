@@ -44,5 +44,25 @@ class Subspace(BaseSpace):
 
     @property
     def order(self):
-        "The dimensionality of this subspace."
+        """The dimensionality of this subspace."""
         return len(self.params)
+
+    def __contains__(self, other):
+        """Determine if another subspace lies entirely within this subspace.
+
+        Returns
+        =======
+        A SymPy And object containing any number of SymPy Equality objects.
+        This will indicate how Symbols need to be constrained in order for
+        the other subspace to be entirely within this subspace.  This will
+        reduce to True or False whenever those Symbols can be more thoroughly
+        constrained.
+
+        """
+        # If this space is an ancestor of the other, the other subspace will
+        # definitely be in this subspace.
+        if other.is_descendant(self):
+            return True
+        # Otherwise... give up.
+        raise NotImplementedError('This currently works only for direct '
+                                  'ancestors.')

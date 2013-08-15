@@ -18,18 +18,18 @@ class GlobalSpace(BaseSpace):
 
     def __getitem__(self, index):
         return Symbol('Global{0}'.format(index))
-
     @property
     def x(self):
         return self[0]
-
     @property
     def y(self):
         return self[1]
-
     @property
     def z(self):
         return self[2]
+
+    def is_descendant(self, other):
+        return self == other
 
 
 global_space = GlobalSpace()

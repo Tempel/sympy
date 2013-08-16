@@ -12,13 +12,12 @@ def test_parameters():
     point = Subspace([a, b, c], [])
     assert point.order == 0
     assert point.subs({a:1, b:2, c:3}).order == 0
-    # Symbols as parameters; substitution removes parameter.
+    # Symbols as parameters; substitution does not affect parameter list.
     curve = Subspace([2*x, x**2-1], [x])
-    assert curve.order == 1
-    assert curve.subs({x:4}).order == 0
+    assert curve.subs(x, 4) == Subspace([8, 15], [x])
     surface = Subspace([x, y, sin(x*y)], [x, y])
-    assert surface.order == 2
-    assert surface.subs({x:4}).order == 1
+    assert surface.subs(x, 4) == Subspace([4, y, sin(4*y)], [x, y])
+    # TODO Symbols in parent space.
 
 
 def test_parents():

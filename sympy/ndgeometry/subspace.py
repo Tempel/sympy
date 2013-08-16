@@ -66,3 +66,11 @@ class Subspace(BaseSpace):
         # Otherwise... give up.
         raise NotImplementedError('This currently works only for direct '
                                   'ancestors.')
+
+    def _eval_subs(self, old, new):
+        """Create new subspace by substituting symbols in coordinate functions.
+
+        """
+        new_coords = [c.subs(old, new) for c in self.coords]
+        new_parent = self.parent_space.subs(old, new)
+        return Subspace(new_coords, self.params, new_parent)

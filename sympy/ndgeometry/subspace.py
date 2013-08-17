@@ -10,6 +10,7 @@ Subspace
 from __future__ import print_function, division
 
 from sympy import sympify
+from sympy.core import S
 from sympy.core.containers import Tuple
 
 from sympy.ndgeometry.base_space import BaseSpace
@@ -88,3 +89,21 @@ class Subspace(BaseSpace):
         new_coords = self.coords.subs(old, new)
         new_parent = self.parent_space.subs(old, new)
         return Subspace(new_coords, self.params, new_parent)
+
+    def in_ancestor(self, n=None):
+        """Create equivalent subspace in the coordinates of the nth ancestor.
+
+        The zeroth ancestor is this space's parent, so space.is_ancestor(0)
+        will always be equal to space.  If n is None or sufficiently large,
+        a new subspace will be returned as a child of global_space.
+
+        """
+        if n is None:
+            n = S.Infinity
+        elif n == S.Zero:
+            return self
+        # TODO Fix self.coords smaller than parent_space.params.
+        # Use izip_longest?
+        # TODO Fix case where parent_space has no parent_space.
+        # TODO Actually properly account for n.
+        return self.parent_space.subs(zip(self.parent_space.params, self.coords))

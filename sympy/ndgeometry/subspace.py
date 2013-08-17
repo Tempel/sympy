@@ -10,8 +10,11 @@ Subspace
 from __future__ import print_function, division
 
 from sympy import sympify
+from sympy.core.containers import Tuple
+
 from sympy.ndgeometry.base_space import BaseSpace
 from sympy.ndgeometry.global_space import global_space
+
 
 class Subspace(BaseSpace):
     """Unbounded subspace.
@@ -34,8 +37,12 @@ class Subspace(BaseSpace):
     """
 
     def __new__(cls, coords, params, parent_space=global_space, **kwargs):
-        coords = sympify(coords)
-        params = sympify(params)
+        coords = Tuple(*sympify(coords))
+        params = Tuple(*sympify(params))
+        for p in params:
+            if not p.is_Symbol:
+                raise ValueError("Parameter argument must be list of Symbols, "
+                                 "not %s" % p)
         obj = BaseSpace.__new__(cls, coords, params, parent_space, **kwargs)
         obj.coords = coords
         obj.params = params
@@ -71,6 +78,6 @@ class Subspace(BaseSpace):
         """Create new subspace by substituting symbols in coordinate functions.
 
         """
-        new_coords = [c.subs(old, new) for c in self.coords]
+        new_coords = self.coords.subs(old, new)
         new_parent = self.parent_space.subs(old, new)
         return Subspace(new_coords, self.params, new_parent)

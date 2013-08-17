@@ -44,10 +44,17 @@ class Subspace(BaseSpace):
                 raise ValueError("Parameter argument must be list of Symbols, "
                                  "not %s" % p)
         obj = BaseSpace.__new__(cls, coords, params, parent_space, **kwargs)
-        obj.coords = coords
-        obj.params = params
-        obj.parent_space = parent_space
         return obj
+
+    @property
+    def coords(self):
+        return self.args[0]
+    @property
+    def params(self):
+        return self.args[1]
+    @property
+    def parent_space(self):
+        return self.args[2]
 
     @property
     def order(self):

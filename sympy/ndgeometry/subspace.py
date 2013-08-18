@@ -90,20 +90,19 @@ class Subspace(BaseSpace):
         new_parent = self.parent_space.subs(old, new)
         return Subspace(new_coords, self.params, new_parent)
 
-    def in_ancestor(self, n=None):
+    def in_ancestor(self, n=S.Infinity):
         """Create equivalent subspace in the coordinates of the nth ancestor.
 
         The zeroth ancestor is this space's parent, so space.is_ancestor(0)
-        will always be equal to space.  If n is None or sufficiently large,
-        a new subspace will be returned as a child of global_space.
+        will always be equal to space.  If n is sufficiently large, a new
+        subspace will be returned as a child of global_space.
 
         """
-        if n is None:
-            n = S.Infinity
-        elif n == S.Zero:
+        if n == S.Zero or self.parent_space == global_space:
             return self
         # TODO Fix self.coords smaller than parent_space.params.
         # Use izip_longest?
-        # TODO Fix case where parent_space has no parent_space.
-        # TODO Actually properly account for n.
-        return self.parent_space.subs(zip(self.parent_space.params, self.coords))
+        new_coords = self.parent_space.coords.subs(
+            zip(self.parent_space.params, self.coords))
+        return Subspace(new_coords, self.params,
+                        self.parent_space.parent_space).in_ancestor(n-1)

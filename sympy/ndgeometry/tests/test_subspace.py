@@ -17,7 +17,11 @@ def test_parameters():
     assert curve.subs(x, 4) == Subspace([8, 15], [x])
     surface = Subspace([x, y, sin(x*y)], [x, y])
     assert surface.subs(x, 4) == Subspace([4, y, sin(4*y)], [x, y])
-    # TODO Symbols in parent space.
+    # Symbols in parent space.
+    curve2 = Subspace([a*x, x**a-b], [x])
+    point2 = Subspace([4], [], curve2)
+    assert point2.subs(a, 3) == Subspace([4], [], Subspace([3*x, x**3-b], [x]))
+    assert point2.subs(x, 1) == Subspace([4], [], Subspace([a, 1-b], [x]))
 
 
 def test_parents():

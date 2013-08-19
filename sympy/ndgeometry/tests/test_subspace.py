@@ -1,4 +1,4 @@
-from sympy import symbols, sin, cos, pi, Equality, Not
+from sympy import symbols, sin, cos, pi, sqrt, Equality, Not
 
 from sympy.ndgeometry.subspace import Subspace
 from sympy.ndgeometry.global_space import global_space as gl
@@ -33,6 +33,9 @@ def test_parents():
     assert point.in_ancestor(1) == Subspace([1, pi/2, 3], [], cylinder)
     assert point.in_ancestor(2) == Subspace([0, 1, 3], [])
     assert point.in_ancestor() == point.in_ancestor(2)
+    # Fewer coordinates than parent space parameters.
+    point2 = Subspace([2, pi/4], [], cylinder)
+    assert point2.in_ancestor() == Subspace([sqrt(2), sqrt(2), 0], [])
 
 
 def test_contains():

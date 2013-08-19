@@ -9,6 +9,11 @@ Subspace
 
 from __future__ import print_function, division
 
+try:
+    from itertools import zip_longest
+except ImportError:
+    from itertools import izip_longest as zip_longest
+
 from sympy import sympify
 from sympy.core import S
 from sympy.core.containers import Tuple
@@ -100,9 +105,7 @@ class Subspace(BaseSpace):
         """
         if n == S.Zero or self.parent_space == global_space:
             return self
-        # TODO Fix self.coords smaller than parent_space.params.
-        # Use izip_longest?
         new_coords = self.parent_space.coords.subs(
-            zip(self.parent_space.params, self.coords))
+            zip_longest(self.parent_space.params, self.coords, fillvalue=0))
         return Subspace(new_coords, self.params,
                         self.parent_space.parent_space).in_ancestor(n-1)

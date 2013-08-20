@@ -1,10 +1,24 @@
 from sympy import symbols, sin, cos, pi, sqrt, Equality, Not
+from sympy.utilities.pytest import raises
 
 from sympy.ndgeometry.subspace import Subspace
 from sympy.ndgeometry.global_space import global_space as gl
 
 
 a, b, c, r, t, x, y, z = symbols('a b c r t x y z')
+
+
+def test_creation_errors():
+    # Invalid parameters.
+    raises(ValueError, lambda: Subspace([1,2,3], [4,5,6]))
+    raises(ValueError, lambda: Subspace([a,b], [a*b, a+b]))
+    # Too many coordinates.
+    cylinder = Subspace([r*cos(t), r*sin(t), z], [r, t, z])
+    raises(ValueError, lambda: Subspace([1,2,3,4], [], cylinder))
+    # Not using iterable arguments.
+    raises(TypeError, lambda: Subspace(2*a, [a]))
+    raises(TypeError, lambda: Subspace([2*a], a))
+
 
 
 def test_parameters():

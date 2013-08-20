@@ -4,8 +4,11 @@
 
 from __future__ import print_function, division
 
+from sympy.core import S
 from sympy.core.symbol import Symbol
+
 from sympy.ndgeometry.base_space import BaseSpace
+
 
 class GlobalSpace(BaseSpace):
     """An infinite-dimensional rectilinear space.
@@ -15,6 +18,8 @@ class GlobalSpace(BaseSpace):
     attributes x, y, and z, respectively.
 
     """
+
+    order = S.Infinity
 
     def __getitem__(self, index):
         return Symbol('Global{0}'.format(index))

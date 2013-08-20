@@ -44,6 +44,9 @@ class Subspace(BaseSpace):
 
     def __new__(cls, coords, params, parent_space=global_space, **kwargs):
         coords = Tuple(*sympify(coords))
+        if len(coords) > parent_space.order:
+            raise ValueError('Cannot have more coordinates than are in the '
+                             'parent parameter space.')
         params = Tuple(*sympify(params))
         for p in params:
             if not p.is_Symbol:

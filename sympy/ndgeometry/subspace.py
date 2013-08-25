@@ -86,9 +86,15 @@ class Subspace(BaseSpace):
         # definitely be in this subspace.
         if other.is_descendant(self):
             return True
+        # If other has nonzero higher-dimensional coordinates that this
+        # subspace does not, other is definitely not in self.
+        self_coords = self.in_ancestor().coords
+        other_coords = other.in_ancestor().coords
+        if len(self_coords) < len(other_coords) and any(
+                c != S.Zero for c in other_coords[len(self_coords):]):
+            return False
         # Otherwise... give up.
-        raise NotImplementedError('This currently works only for direct '
-                                  'ancestors.')
+        raise NotImplementedError('This currently works only for simple cases.')
 
     def _eval_subs(self, old, new):
         """Create new subspace by substituting symbols in coordinate functions.

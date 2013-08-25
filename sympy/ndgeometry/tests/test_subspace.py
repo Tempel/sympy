@@ -57,14 +57,15 @@ def test_contains():
     cylinder = Subspace([r*cos(t), r*sin(t), z], [r, t, z])
     circle = Subspace([1, a*2*pi, 3], [a], cylinder)
     point1 = Subspace([0.25], [], circle)
-    point2 = Subspace([0, 0, 0], [])
     assert point1 in point1
     assert point1 in circle
     assert circle in cylinder
     assert point1 in cylinder
+    # When higher-dimensions make it impossible.
+    point2 = Subspace([0, 0, 0, 1], [])
     assert point2 not in circle
     # When in other space.
-    circle2 = ([cos(t), sin(t), 3], [t])
+    circle2 = Subspace([cos(t), sin(t), 3], [t])
     point3 = Subspace([1, 0, 3], [])
     assert point3 in circle
     assert point2 in cylinder

@@ -60,21 +60,21 @@ def test_contains():
     cylinder = Subspace([r*cos(t), r*sin(t), z], [r, t, z])
     circle = Subspace([1, a*2*pi, 3], [a], cylinder)
     point1 = Subspace([0.25], [], circle)
-    assert point1 in point1
-    assert point1 in circle
-    assert circle in cylinder
-    assert point1 in cylinder
+    assert point1.contains(point1)
+    assert circle.contains(point1)
+    assert cylinder.contains(circle)
+    assert cylinder.contains(point1)
     # When higher-dimensions make it impossible.
     point2 = Subspace([0, 0, 0, 1], [])
-    assert point2 not in circle
+    assert circle.contains(point2) is False
+    assert point1.contains(point2) is False
     # When in other space.
     circle2 = Subspace([cos(t), sin(t), 3], [t])
     point3 = Subspace([1, 0, 3], [])
-    assert point3 in circle
-    assert point2 in cylinder
-    assert circle2 in circle
+    assert circle.contains(point3)
+    assert cylinder.contains(point2)
+    assert circle.contains(circle2)
     # When including symbols.
     point4 = Subspace([0, 1, b], [])
-    assert (point4 in circle) == Equality(b, 3)
-    assert (point4 not in circle) == Not(Equality(b, 3))
-    assert point4 in cylinder
+    assert (circle.contains(point4)) == Equality(b, 3)
+    assert cylinder.contains(point4)

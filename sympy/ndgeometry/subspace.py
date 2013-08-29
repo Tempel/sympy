@@ -98,7 +98,7 @@ class Subspace(BaseSpace):
         """The dimensionality of this subspace."""
         return len(self.params)
 
-    def __contains__(self, other):
+    def contains(self, other):
         """Determine if another subspace lies entirely within this subspace.
 
         Returns

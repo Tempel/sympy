@@ -39,10 +39,22 @@ class Subspace(BaseSpace):
     parent_space : Subspace, optional
         The space in which this subspace's coordinates are defined.
         Defaults to the global_space.
+    implicit: list of SymPy expressions, optional
+        A set of equations that are True if and only if a subspace is
+        contained entirely within this subspace.  Note that these are not
+        checked against the coordinate equations to ensure they match.
+    inverse: list of SymPy expressions, optional
+        A set of equations that convert coordinates in the parent subspace
+        to coordinates in this subspace.  The inverse of the coordinate
+        equations above.  Requires an implicit equation in order to first
+        determine if the parent space coordinates are actually within this
+        space.  Note that these are not checked against the coordinate
+        equations to ensure they match.
 
     """
 
-    def __new__(cls, coords, params, parent_space=global_space, **kwargs):
+    def __new__(cls, coords, params, parent_space=global_space, implicit=None,
+                inverse=None, **kwargs):
         coords = Tuple(*sympify(coords))
         if len(coords) > parent_space.order:
             raise ValueError('Cannot have more coordinates than are in the '
@@ -52,7 +64,17 @@ class Subspace(BaseSpace):
             if not p.is_Symbol:
                 raise ValueError("Parameter argument must be list of Symbols, "
                                  "not %s" % p)
-        obj = BaseSpace.__new__(cls, coords, params, parent_space, **kwargs)
+        implicit = Tuple(*implicit) if implicit is not None else None
+        if inverse is not None:
+            if implicit is None:
+                raise ValueError('Implicit equations are required in order to '
+                                 'have inverse equations.')
+            inverse = Tuple(*inverse)
+            if len(inverse) != len(params):
+                raise ValueError('There must be one inverse equation for '
+                                 'each parameter in this space.')
+        obj = BaseSpace.__new__(cls, coords, params, parent_space, implicit,
+                                inverse, **kwargs)
         return obj
 
     @property
@@ -64,6 +86,12 @@ class Subspace(BaseSpace):
     @property
     def parent_space(self):
         return self.args[2]
+    @property
+    def implicit(self):
+        return self.args[3]
+    @property
+    def inverse(self):
+        return self.args[4]
 
     @property
     def order(self):

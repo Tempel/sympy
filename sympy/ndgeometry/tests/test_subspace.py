@@ -18,7 +18,10 @@ def test_creation_errors():
     # Not using iterable arguments.
     raises(TypeError, lambda: Subspace(2*a, [a]))
     raises(TypeError, lambda: Subspace([2*a], a))
-
+    # Invalid implicit/inverse.
+    raises(ValueError, lambda: Subspace([2*a], [a], inverse=[1]))
+    raises(ValueError, lambda: Subspace([2*a], [a], implicit=[True],
+                                        inverse=[1, 2, 3]))
 
 
 def test_parameters():

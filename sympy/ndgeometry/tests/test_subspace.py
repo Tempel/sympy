@@ -22,6 +22,8 @@ def test_creation_errors():
     raises(ValueError, lambda: Subspace([2*a], [a], inverse=[1]))
     raises(ValueError, lambda: Subspace([2*a], [a], implicit=[True],
                                         inverse=[1, 2, 3]))
+    raises(ValueError, lambda: Subspace([a], [a], implicit=[True],
+                           parent_space=Subspace([b], [b], implicit=[gl.x-b])))
 
 
 def test_parameters():

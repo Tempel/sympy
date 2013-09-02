@@ -64,7 +64,11 @@ class Subspace(BaseSpace):
             if not p.is_Symbol:
                 raise ValueError("Parameter argument must be list of Symbols, "
                                  "not %s" % p)
-        implicit = Tuple(*implicit) if implicit is not None else None
+        if implicit is not None:
+            if parent_space != global_space and parent_space.inverse is None:
+                raise ValueError('Can only use implicit definitions if parent '
+                                 'space has inverse functions.')
+            implicit = Tuple(*implicit)
         if inverse is not None:
             if implicit is None:
                 raise ValueError('Implicit equations are required in order to '

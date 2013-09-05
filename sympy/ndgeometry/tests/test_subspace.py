@@ -52,9 +52,17 @@ def test_parents():
     assert point.in_ancestor(1) == Subspace([1, pi/2, 3], [], cylinder)
     assert point.in_ancestor(2) == Subspace([0, 1, 3], [])
     assert point.in_ancestor() == point.in_ancestor(2)
+    assert circle.in_ancestor() == Subspace([cos(a*2*pi), sin(a*2*pi), 3], [a])
+    assert circle.in_ancestor() == circle.in_ancestor(1)
     # Fewer coordinates than parent space parameters.
     point2 = Subspace([2, pi/4], [], cylinder)
     assert point2.in_ancestor() == Subspace([sqrt(2), sqrt(2), 0], [])
+    # Implicit and inverse in_ancestor.
+    skewplane = Subspace([x+y, y, 7], [x,y], implicit=[gl.z-7],
+                         inverse=[gl.x-gl.y, gl.y])
+    line = Subspace([a, 3*a+2], [a], skewplane, [3*x+2-y], [x])
+    assert line.in_ancestor() == Subspace([4*a+2, 3*a+2, 7], [a],
+        implicit=[gl.z-7, 3*gl.x-4*gl.y+2], inverse=[gl.x-gl.y])
 
 
 def test_contains():

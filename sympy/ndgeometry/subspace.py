@@ -148,5 +148,15 @@ class Subspace(BaseSpace):
             return self
         new_coords = self.parent_space.coords.subs(
             zip_longest(self.parent_space.params, self.coords, fillvalue=0))
-        return Subspace(new_coords, self.params,
-                        self.parent_space.parent_space).in_ancestor(n-1)
+        # All parent conditions must be satisfied before even trying to
+        # satisfy our conditions.
+        new_implicit = self.parent_space.implicit + (self.implicit.subs(
+            zip(self.parent_space.params, self.parent_space.inverse)
+            ) if self.implicit is not None else Tuple())
+        new_inverse = self.inverse.subs(
+            zip(self.parent_space.params, self.parent_space.inverse)
+            ) if self.inverse is not None else None
+        new_space = Subspace(new_coords, self.params,
+                             self.parent_space.parent_space,
+                             new_implicit, new_inverse)
+        return new_space.in_ancestor(n-1)

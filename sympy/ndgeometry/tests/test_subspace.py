@@ -24,6 +24,8 @@ def test_creation_errors():
                                         inverse=[1, 2, 3]))
     raises(ValueError, lambda: Subspace([a], [a], implicit=[True],
                            parent_space=Subspace([b], [b], implicit=[gl.x-b])))
+    raises(ValueError, lambda: Subspace([a], [a], implicit=[True],
+                                        parent_space=Subspace([b], [b])))
 
 
 def test_parameters():
@@ -63,6 +65,17 @@ def test_parents():
     line = Subspace([a, 3*a+2], [a], skewplane, [3*x+2-y], [x])
     assert line.in_ancestor() == Subspace([4*a+2, 3*a+2, 7], [a],
         implicit=[gl.z-7, 3*gl.x-4*gl.y+2], inverse=[gl.x-gl.y])
+    wave = Subspace([x, y, sin(x*y)], [x,y], implicit=[sin(gl.x*gl.y) - gl.z],
+                    inverse=[gl.x, gl.y])
+    polar = Subspace([r*cos(t), r*sin(t)], [r,t], wave, [True])
+    assert polar.in_ancestor() == Subspace(
+        [r*cos(t), r*sin(t), sin(r*r*cos(t)*sin(t))], [r,t],
+        implicit=[sin(gl.x*gl.y) - gl.z, True])
+    spiral = Subspace([a, a*b+c], [a], polar)
+    assert spiral.in_ancestor() == Subspace(
+        [a*cos(a*b+c), a*sin(a*b+c), sin(a*a*cos(a*b+c)*sin(a*b+c))], [a])
+    wobble = Subspace([a, a*b+c], [a], wave)
+    assert wobble.in_ancestor() == Subspace([a, a*b+c, sin(a*(a*b+c))], [a])
 
 
 def test_contains():

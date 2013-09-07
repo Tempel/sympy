@@ -144,21 +144,20 @@ class Subspace(BaseSpace):
         subspace will be returned as a child of global_space.
 
         """
-        if n == S.Zero or self.parent_space == global_space:
+        p = self.parent_space
+        if n == S.Zero or p == global_space:
             return self
-        new_coords = self.parent_space.coords.subs(
-            zip_longest(self.parent_space.params, self.coords, fillvalue=0))
+        new_coords = p.coords.subs(
+            zip_longest(p.params, self.coords, fillvalue=0))
         # All parent conditions must be satisfied before even trying to
         # satisfy our conditions.
-        if self.parent_space.implicit is not None and self.implicit is not None:
-            new_implicit = self.parent_space.implicit + self.implicit.subs(
-                zip(self.parent_space.params, self.parent_space.inverse))
+        if p.implicit is not None and self.implicit is not None:
+            new_implicit = p.implicit + self.implicit.subs(
+                zip(p.params, p.inverse))
         else:
             new_implicit = None
-        new_inverse = self.inverse.subs(
-            zip(self.parent_space.params, self.parent_space.inverse)
+        new_inverse = self.inverse.subs(zip(p.params, p.inverse)
             ) if self.inverse is not None else None
-        new_space = Subspace(new_coords, self.params,
-                             self.parent_space.parent_space,
+        new_space = Subspace(new_coords, self.params, p.parent_space,
                              new_implicit, new_inverse)
         return new_space.in_ancestor(n-1)

@@ -17,6 +17,7 @@ except ImportError:
 from sympy import sympify
 from sympy.core import S
 from sympy.core.containers import Tuple
+from sympy.logic.boolalg import And
 
 from sympy.ndgeometry.base_space import BaseSpace
 from sympy.ndgeometry.global_space import global_space
@@ -39,10 +40,11 @@ class Subspace(BaseSpace):
     parent_space : Subspace, optional
         The space in which this subspace's coordinates are defined.
         Defaults to the global_space.
-    implicit: list of SymPy expressions, optional
-        A set of equations that are True if and only if a subspace is
-        contained entirely within this subspace.  Note that these are not
-        checked against the coordinate equations to ensure they match.
+    implicit: SymPy Boolean expression, optional
+        Some expression (e.g. And, Equality) that is True if and only if a
+        subspace is contained entirely within this subspace.  Note that
+        these are not checked against the coordinate equations to ensure
+        correctness.
     inverse: list of SymPy expressions, optional
         A set of equations that convert coordinates in the parent subspace
         to coordinates in this subspace.  The inverse of the coordinate
@@ -68,7 +70,6 @@ class Subspace(BaseSpace):
             if parent_space != global_space and parent_space.inverse is None:
                 raise ValueError('Can only use implicit definitions if parent '
                                  'space has inverse functions.')
-            implicit = Tuple(*implicit)
         if inverse is not None:
             if implicit is None:
                 raise ValueError('Implicit equations are required in order to '
@@ -149,13 +150,13 @@ class Subspace(BaseSpace):
             return self
         new_coords = p.coords.subs(
             zip_longest(p.params, self.coords, fillvalue=0))
-        # All parent conditions must be satisfied before even trying to
-        # satisfy our conditions.
-        if p.implicit is not None and self.implicit is not None:
-            new_implicit = p.implicit + self.implicit.subs(
-                zip(p.params, p.inverse))
-        else:
-            new_implicit = None
+        # Both self's and parent's implicit definitions apply to the new space.
+        new_implicit = And(p.implicit, self.implicit) if (
+            self.implicit is not None) else None
+        # new_implicit may have already evaluated to True or False.  If not,
+        # substitute symbols to bring new_implicit into the grandparent space.
+        if new_implicit is not None and not isinstance(new_implicit, bool):
+            new_implicit = new_implicit.subs(zip(p.params, p.inverse))
         new_inverse = self.inverse.subs(zip(p.params, p.inverse)
             ) if self.inverse is not None else None
         new_space = Subspace(new_coords, self.params, p.parent_space,

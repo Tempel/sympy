@@ -1,4 +1,4 @@
-from sympy import symbols, sin, cos, pi, sqrt, Equality, Not
+from sympy import symbols, sin, cos, pi, sqrt, Equality as Eq, And
 from sympy.utilities.pytest import raises
 
 from sympy.ndgeometry.subspace import Subspace
@@ -20,11 +20,11 @@ def test_creation_errors():
     raises(TypeError, lambda: Subspace([2*a], a))
     # Invalid implicit/inverse.
     raises(ValueError, lambda: Subspace([2*a], [a], inverse=[1]))
-    raises(ValueError, lambda: Subspace([2*a], [a], implicit=[True],
+    raises(ValueError, lambda: Subspace([2*a], [a], implicit=True,
                                         inverse=[1, 2, 3]))
-    raises(ValueError, lambda: Subspace([a], [a], implicit=[True],
-                           parent_space=Subspace([b], [b], implicit=[gl.x-b])))
-    raises(ValueError, lambda: Subspace([a], [a], implicit=[True],
+    raises(ValueError, lambda: Subspace([a], [a], implicit=True,
+                        parent_space=Subspace([b], [b], implicit=Eq(gl.x, b))))
+    raises(ValueError, lambda: Subspace([a], [a], implicit=True,
                                         parent_space=Subspace([b], [b])))
 
 
@@ -60,17 +60,17 @@ def test_parents():
     point2 = Subspace([2, pi/4], [], cylinder)
     assert point2.in_ancestor() == Subspace([sqrt(2), sqrt(2), 0], [])
     # Implicit and inverse in_ancestor.
-    skewplane = Subspace([x+y, y, 7], [x,y], implicit=[gl.z-7],
+    skewplane = Subspace([x+y, y, 7], [x,y], implicit=Eq(gl.z, 7),
                          inverse=[gl.x-gl.y, gl.y])
-    line = Subspace([a, 3*a+2], [a], skewplane, [3*x+2-y], [x])
+    line = Subspace([a, 3*a+2], [a], skewplane, Eq(3*x+2, y), [x])
     assert line.in_ancestor() == Subspace([4*a+2, 3*a+2, 7], [a],
-        implicit=[gl.z-7, 3*gl.x-4*gl.y+2], inverse=[gl.x-gl.y])
-    wave = Subspace([x, y, sin(x*y)], [x,y], implicit=[sin(gl.x*gl.y) - gl.z],
+        implicit=And(Eq(gl.z ,7), Eq(3*gl.x-3*gl.y+2, gl.y)), inverse=[gl.x-gl.y])
+    wave = Subspace([x, y, sin(x*y)], [x,y], implicit=Eq(sin(gl.x*gl.y), gl.z),
                     inverse=[gl.x, gl.y])
-    polar = Subspace([r*cos(t), r*sin(t)], [r,t], wave, [True])
+    polar = Subspace([r*cos(t), r*sin(t)], [r,t], wave, True)
     assert polar.in_ancestor() == Subspace(
         [r*cos(t), r*sin(t), sin(r*r*cos(t)*sin(t))], [r,t],
-        implicit=[sin(gl.x*gl.y) - gl.z, True])
+        implicit=Eq(sin(gl.x*gl.y), gl.z))
     spiral = Subspace([a, a*b+c], [a], polar)
     assert spiral.in_ancestor() == Subspace(
         [a*cos(a*b+c), a*sin(a*b+c), sin(a*a*cos(a*b+c)*sin(a*b+c))], [a])

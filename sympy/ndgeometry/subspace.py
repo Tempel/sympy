@@ -135,7 +135,12 @@ class Subspace(BaseSpace):
         """
         new_coords = self.coords.subs(old, new)
         new_parent = self.parent_space.subs(old, new)
-        return Subspace(new_coords, self.params, new_parent)
+        new_implicit = self.implicit.subs(old, new) if (
+            self.implicit is not None) else None
+        new_inverse = self.inverse.subs(old, new) if (
+            self.inverse is not None) else None
+        return Subspace(new_coords, self.params, new_parent, new_implicit,
+                        new_inverse)
 
     def in_ancestor(self, n=S.Infinity):
         """Create equivalent subspace in the coordinates of the nth ancestor.

@@ -43,6 +43,15 @@ def test_parameters():
     point2 = Subspace([4], [], curve2)
     assert point2.subs(a, 3) == Subspace([4], [], Subspace([3*x, x**3-b], [x]))
     assert point2.subs(x, 1) == Subspace([4], [], Subspace([a, 1-b], [x]))
+    # Symbols in implicit and inverse.
+    line = Subspace([x, a*x+b], [x], implicit=Eq(gl.y, a*gl.x+b),
+                    inverse=[gl.x])
+    assert line.subs({a:2, b:3}) == Subspace([x, 2*x+3], [x],
+        implicit=Eq(gl.y, 2*gl.x+3), inverse=[gl.x])
+    # Note that substituting a parameter will likely make implicit incorrect.
+    # That happens in this case, but it's probably better to just avoid it.
+    assert line.subs(x, 7) == Subspace([7, a*7+b], [x],
+        implicit=Eq(gl.y, a*gl.x+b), inverse=[gl.x])
 
 
 def test_parents():

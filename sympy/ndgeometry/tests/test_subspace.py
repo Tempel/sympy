@@ -99,8 +99,8 @@ def test_contains():
     assert circle.contains(point1)
     assert cylinder.contains(circle)
     assert cylinder.contains(point1)
-    # TODO Handle zero-order spaces (points) without needing implicit.
-    #assert point1.in_ancestor().contains(point1)
+    # Zero-order spaces (points) don't need implicit.
+    assert point1.in_ancestor().contains(point1)
     # When higher-dimensions make it impossible.
     point2 = Subspace([0, 0, 0, 1], [])
     assert cylinder.contains(point2) is False
@@ -118,7 +118,10 @@ def test_contains():
     #assert circle.contains(circle2)
     # When including symbols.
     point4 = Subspace([0, 1, b], [])
+    point5 = Subspace([0, a, b], [])
     assert circle.contains(point4) == Eq(b, 3)
+    assert circle.contains(point5) == And(Eq(sqrt(a*a), 1), Eq(b, 3))
+    assert point4.contains(point5) == Eq(1, a)
     assert cylinder.contains(point4)
     # When two spaces intersect but do not coincide.
     circle3 = Subspace([cos(t)+1, sin(t)+1, 3], [t])

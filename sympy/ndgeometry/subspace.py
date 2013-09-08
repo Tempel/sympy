@@ -17,6 +17,7 @@ except ImportError:
 from sympy import sympify
 from sympy.core import S
 from sympy.core.containers import Tuple
+from sympy.core.relational import Equality
 from sympy.logic.boolalg import And
 
 from sympy.ndgeometry.base_space import BaseSpace
@@ -126,6 +127,11 @@ class Subspace(BaseSpace):
         if len(self_top.coords) < len(other_top.coords) and any(
                 c != S.Zero for c in other_top.coords[len(self_top.coords):]):
             return False
+        # If self has no parameters, it is a point which can be checked quite
+        # easily.
+        if self_top.order == 0:
+            return And(*(Equality(a,b) for a,b in zip_longest(
+                self_top.coords, other_top.coords, fillvalue=0)))
         # If it's not one of the trivial cases, use implicit to check.
         if self.implicit is not None:
             imp = self_top.implicit

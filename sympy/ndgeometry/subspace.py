@@ -108,7 +108,7 @@ class Subspace(BaseSpace):
 
         Returns
         =======
-        A SymPy And object containing any number of SymPy Equality objects.
+        A SymPy Boolean object.
         This will indicate how Symbols need to be constrained in order for
         the other subspace to be entirely within this subspace.  This will
         reduce to True or False whenever those Symbols can be more thoroughly
@@ -119,15 +119,35 @@ class Subspace(BaseSpace):
         # definitely be in this subspace.
         if other.is_descendant(self):
             return True
+        self_top = self.in_ancestor()
+        other_top = other.in_ancestor()
         # If other has nonzero higher-dimensional coordinates that this
         # subspace does not, other is definitely not in self.
-        self_coords = self.in_ancestor().coords
-        other_coords = other.in_ancestor().coords
-        if len(self_coords) < len(other_coords) and any(
-                c != S.Zero for c in other_coords[len(self_coords):]):
+        if len(self_top.coords) < len(other_top.coords) and any(
+                c != S.Zero for c in other_top.coords[len(self_top.coords):]):
             return False
-        # Otherwise... give up.
-        raise NotImplementedError('This currently works only for simple cases.')
+        # If it's not one of the trivial cases, use implicit to check.
+        if self.implicit is not None:
+            imp = self_top.implicit
+            # Replace all global coords in implicit with corresponding coord
+            # functions from other.
+            for gl, c in zip_longest(global_space, other_top.coords, fillvalue=0):
+                # If we have a definitive boolean, we're done.
+                if isinstance(imp, bool):
+                    return imp
+                # Could be any number of global coords in implicit; replace
+                # them all until none are left.
+                if not any(i.name.startswith("Global") for i in imp.free_symbols):
+                    break
+                imp = imp.replace(gl, c)
+            # If other's parameters appear in imp at this point, it implies
+            # that other intersects with self rather than being contained.
+            if any(imp.has(i) for i in other.params):
+                return False
+            return imp
+        # If we haven't solved it by now, give up.
+        raise NotImplementedError('Implicit definition is required in '
+                                  'order to handle non-trivial cases.')
 
     def _eval_subs(self, old, new):
         """Create new subspace by substituting symbols in coordinate functions.

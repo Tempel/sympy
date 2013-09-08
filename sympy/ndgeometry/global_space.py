@@ -4,6 +4,8 @@
 
 from __future__ import print_function, division
 
+from itertools import count
+
 from sympy.core import S
 from sympy.core.symbol import Symbol
 
@@ -23,6 +25,11 @@ class GlobalSpace(BaseSpace):
 
     def __getitem__(self, index):
         return Symbol('Global{0}'.format(index))
+    def __iter__(self):
+        return (self[i] for i in count())
+    @property
+    def params(self):
+        return self
     @property
     def x(self):
         return self[0]

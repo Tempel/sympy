@@ -7,8 +7,8 @@ class BoundSpace(BaseSpace):
 
     """
 
-    def __new__(cls, parent_space, bounding_loop, **kwargs):
-        obj = BaseSpace.__new__(parent_space, bounding_loop, **kwargs)
-        obj.parent_space = parent_space
-        obj.bounding_loop = bounding_loop
-        return obj
+    def __new__(cls, parent_space, bounding_loop):
+        if bounding_loop.order != parent_space.order-1:
+            raise ValueError("Bounding loop's order must be one lower than "
+                             "parent space's order.")
+        return BaseSpace.__new__(parent_space, bounding_loop)

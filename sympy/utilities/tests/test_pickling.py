@@ -33,12 +33,6 @@ excluded_attrs = set(['_assumptions', '_mhash'])
 def check(a, exclude=[], check_attr=True):
     """ Check that pickling and copying round-trips.
     """
-    # The below hasattr() check will warn about is_Real in Python 2.5, so
-    # disable this to keep the tests clean
-    # XXX: Really? It *does* warn in 2.7.2 too.
-    warnings.filterwarnings("ignore", category=SymPyDeprecationWarning)
-    # We don't care about DeprecationWarnings in the hasattr() check either;
-    # deprecated or no, the attributes need to be the same.
     # Python 2.6+ warns about BasicException.message, for example.
     warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -76,7 +70,9 @@ def check(a, exclude=[], check_attr=True):
         c(a, b, d1)
         c(b, a, d2)
 
-    warnings.filterwarnings("default", category=SymPyDeprecationWarning)
+    # reset filters
+    warnings.simplefilter("default", category=DeprecationWarning)
+    warnings.simplefilter("error", category=SymPyDeprecationWarning)
 
 #================== core =========================
 

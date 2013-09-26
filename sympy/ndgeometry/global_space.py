@@ -7,6 +7,8 @@ from __future__ import print_function, division
 from itertools import count
 
 from sympy.core import S
+from sympy.core.compatibility import as_int
+from sympy.core.containers import Tuple
 from sympy.core.symbol import Symbol
 
 from sympy.ndgeometry.base_space import BaseSpace
@@ -24,9 +26,14 @@ class GlobalSpace(BaseSpace):
     order = S.Infinity
 
     def __getitem__(self, index):
-        return Symbol('Global{0}'.format(index))
+        if isinstance(index, slice):
+            step = index.step if index.step is not None else 1
+            return Tuple(*(self[j] for j in
+                           range(index.start, index.stop, step)))
+        return Symbol('Global{0}'.format(as_int(index)))
     def __iter__(self):
         return (self[i] for i in count())
+
     @property
     def params(self):
         return self

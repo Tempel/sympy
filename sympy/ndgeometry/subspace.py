@@ -14,7 +14,7 @@ try:
 except ImportError:
     from itertools import izip_longest as zip_longest
 
-from sympy import sympify
+from sympy import sympify, simplify
 from sympy.core import S
 from sympy.core.containers import Tuple
 from sympy.core.relational import Equality
@@ -145,7 +145,7 @@ class Subspace(BaseSpace):
                 # them all until none are left.
                 if not any(i.name.startswith("Global") for i in imp.free_symbols):
                     break
-                imp = imp.replace(gl, c)
+                imp = simplify(imp.replace(gl, c))
             # If other's parameters appear in imp at this point, it implies
             # that other intersects with self rather than being contained.
             if any(imp.has(i) for i in other.params):

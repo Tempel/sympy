@@ -113,9 +113,7 @@ def test_contains():
     point3 = Subspace([1, 0, 3], [])
     assert circle.contains(point3)
     assert cylinder.contains(point3)
-    # FIXME This test breaks without simplify, but adding simplify breaks
-    # much more because simplify appears to be bugged.
-    #assert circle.contains(circle2)
+    assert circle.contains(circle2)
     # When including symbols.
     point4 = Subspace([0, 1, b], [])
     point5 = Subspace([0, a, b], [])

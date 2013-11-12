@@ -27,9 +27,13 @@ class GlobalSpace(BaseSpace):
 
     def __getitem__(self, index):
         if isinstance(index, slice):
+            start = index.start if index.start is not None else 0
             step = index.step if index.step is not None else 1
+            if index.stop is None:
+                raise ValueError('Cannot slice to end; global space has '
+                                 'infinite dimensions.')
             return Tuple(*(self[j] for j in
-                           range(index.start, index.stop, step)))
+                           range(start, index.stop, step)))
         return Symbol('Global{0}'.format(as_int(index)))
     def __iter__(self):
         return (self[i] for i in count())

@@ -15,6 +15,8 @@ def test_getitem():
     assert global_space[2] == symbols('Global2')
     raises(ValueError, lambda: global_space['a'])
     assert global_space[1:3] == symbols('Global1 Global2')
+    assert global_space[:3] == symbols('Global0 Global1 Global2')
+    raises(ValueError, lambda: global_space[1:])
     assert global_space.x == symbols('Global0')
     assert global_space.y == symbols('Global1')
     assert global_space.z == symbols('Global2')

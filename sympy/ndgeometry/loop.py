@@ -20,7 +20,7 @@ class Loop(BaseSpace):
         members = Tuple(*members)
         order = members[0].order
         for m in members[1:]:
-            if m != order:
+            if m.order != order:
                 raise ValueError('All members of the loop must be of the same '
                                  'order (i.e. have the same number of '
                                  'parameters).')
